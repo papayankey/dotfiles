@@ -1,0 +1,121 @@
+
+" === General settings ===
+
+set nocompatible	          " make Vi Improved
+filetype off                " required
+set encoding=utf-8
+filetype plugin indent on
+syntax enable
+
+" Give more power to backspace key
+set backspace=indent,eol,start
+
+set number relativenumber
+set tabstop=2 softtabstop=2
+set shiftwidth=2
+set expandtab
+set smartindent
+set nowrap
+set noswapfile
+set nobackup
+set incsearch nohlsearch
+set scrolloff=10
+set cursorline  " highlight screen of cursor location
+
+" Reduce redraws and regex fix
+set lazyredraw
+set re=1
+
+" Give more space for messages
+set cmdheight=2
+
+" Always show sign column,
+" to avoid text shifts diagnostic symbols
+set signcolumn=yes
+
+" Allows to switch buffers
+" with unsaved edits
+set hidden
+
+" Show cursor position at all times
+set ruler
+
+" Colorscheme setting
+set colorcolumn=80
+highlight ColorColumn ctermbg=0 guibg=lightgray
+set background=dark
+
+" Enable use of mouse where possible
+if has('mouse')
+  set mouse=a
+endif
+
+" Use single space as the <leader>
+let mapleader=' '           
+let g:mapleader=' '
+
+" Netrw config
+let g:netrw_preview=1 " make vertical split default for previewing files
+let g:netrw_liststyle=3
+let g:netrw_banner=0
+let g:netrw_winsize=30
+let g:netrw_hide=1  " Default: not to show hidden files
+let g:netrw_list_hide='^node_modules'
+
+" = Personal Netrw Reference =
+
+" Refresh directory listing: CTRL-L (netrw-ctrl-l)
+" Create directory: d (netrw-d)
+" Attempt delete file or directory D (netrw-D)
+" Go up one directory: - (netrw--)
+" Hide/show files: a
+
+
+" === Key mappings ===
+
+" Fast saving of files
+nnoremap <silent> <leader>w :w<CR><Esc>
+
+" Switch between buffers
+nnoremap <silent> <C-x> :bnext<CR>
+nnoremap <silent> <C-z> :bprev<CR>
+
+" Toggle window splits
+nnoremap <C-j> <C-W>j
+nnoremap <C-k> <C-W>k
+nnoremap <C-h> <C-W>h
+nnoremap <C-l> <C-W>l
+
+" Toggle Netrw files
+" and directory listing
+nnoremap <silent> <C-b> :Lexplore<CR>
+
+" My favourite magic
+" Moving lines up <shift-k> or down <shift-j>
+nnoremap <silent> <S-j> :m+1<CR>
+nnoremap <silent> <S-k> :m-2<CR>
+inoremap <silent> <S-j> <Esc>:m+1<CR>
+inoremap <silent> <S-k> <Esc>:m-2<CR>
+vnoremap <silent> <S-j> :m '>+1<CR>
+vnoremap <silent> <S-k> :m '<-2<CR>
+
+" === Plugins ===
+
+call plug#begin('~/.vim/plugged')
+
+" Gruvbox community edition
+" Premiere vim plugin
+Plug 'https://github.com/gruvbox-community/gruvbox'
+Plug 'https://tpope.io/vim/fugitive.git'
+" Surroundings, parenthesis, brackets, quotes etc
+Plug 'https://tpope.io/vim/surround.git'
+" Commenting
+Plug 'https://tpope.io/vim/commentary.git'
+
+call plug#end()
+
+" Gruvbox community edition
+colorscheme gruvbox
+
+
+
