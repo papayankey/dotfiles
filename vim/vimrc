@@ -120,8 +120,10 @@ set wildmenu
 set wildignore+=.git/**/*
 set wildignore+=node_modules/**/*
 
-" Enable folding
-" set foldmethod=syntax
+" Folding
+" Save and restore folds when file closes and re-opens
+autocmd BufWinLeave * mkview
+autocmd BufWinEnter * silent loadview
 
 
 " === Netrw ===
