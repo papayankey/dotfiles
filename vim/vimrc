@@ -1,121 +1,298 @@
+" === Plugins ===
 
-" === General settings ===
+call plug#begin('~/.vim/plugged')
 
-set nocompatible	          " make Vi Improved
-filetype off                " required
+" Go support
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+" Snippets
+Plug 'SirVer/ultisnips'
+" Gruvbox colorscheme
+Plug 'https://github.com/gruvbox-community/gruvbox'
+" Git Fugitive
+Plug 'https://tpope.io/vim/fugitive.git'
+" Adds surroundings such as quotes, brackets ...
+Plug 'https://tpope.io/vim/surround.git'
+" Adds comments
+Plug 'https://tpope.io/vim/commentary.git'
+" Better syntax highlight
+Plug 'sheerun/vim-polyglot'
+" CSS color highlighter
+Plug 'https://github.com/ap/vim-css-color'
+" Light weight tabline & themes
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+" Coc
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+call plug#end()
+
+
+" === General Settings ===
+
+set nocompatible " Vi improved
+filetype off     " required
+
+" Default encoding
 set encoding=utf-8
+set fileencoding=utf-8
+
 filetype plugin indent on
 syntax enable
 
-" Give more power to backspace key
+" Empower backspace
 set backspace=indent,eol,start
 
 set number relativenumber
+
+" Dedicate show mode to airline
+set noshowmode
+
+" Always insert spaces instead of tabs
 set tabstop=2 softtabstop=2
 set shiftwidth=2
+
+" make [tabs] = [space]
 set expandtab
+
 set smartindent
 set nowrap
 set noswapfile
 set nobackup
 set incsearch nohlsearch
-set scrolloff=10
-set cursorline  " highlight screen of cursor location
+set scrolloff=8
 
-" Reduce redraws and regex fix
+" Default splits for new buffers
+set splitbelow " bottom
+set splitright " right
+
+" Improves redraws and smooth scrolling
 set lazyredraw
+set ttyfast
+
+" Regex fix
 set re=1
 
 " Give more space for messages
+" above default status line
 set cmdheight=2
 
-" Always show sign column,
-" to avoid text shifts diagnostic symbols
-set signcolumn=yes
-
-" Allows to switch buffers
-" with unsaved edits
+" Use same column for number and symbols
+set signcolumn=number
+  
+" Allows buffers switch with unsaved edits
 set hidden
 
 " Show cursor position at all times
 set ruler
 
-" Colorscheme setting
 set colorcolumn=80
 highlight ColorColumn ctermbg=0 guibg=lightgray
 set background=dark
+
+" Terminal windows height
+set termwinsize=10x0
 
 " Enable use of mouse where possible
 if has('mouse')
   set mouse=a
 endif
 
-" Use single space as the <leader>
-let mapleader=' '           
+" List [space] [tabs] [trail] characters
+" set list
+" set listchars=tab:>.,trail:.
+
+" Decrease update time
+set updatetime=300
+
+" Don't pass message to |ins-completion-menu|
+set shortmess+=c
+
+" gruvbox community colorscheme
+colorscheme gruvbox
+
+" Use [space] as leader key
+let mapleader=' '
 let g:mapleader=' '
 
-" Netrw config
-let g:netrw_preview=1 " make vertical split default for previewing files
+" Fuzzy search
+set path+=**
+set wildmenu
+set wildignore+=.git/**/*
+set wildignore+=node_modules/**/*
+
+" Enable folding
+" set foldmethod=syntax
+
+
+" === Netrw ===
+
+let g:netrw_preview=1   " Vertical splits for previewing
 let g:netrw_liststyle=3
 let g:netrw_banner=0
-let g:netrw_winsize=30
-let g:netrw_hide=1  " Default: not to show hidden files
-let g:netrw_list_hide='^node_modules'
+let g:netrw_winsize=30	" 30% window size
+let g:netrw_hide=1
+let g:netrw_list_hide='node_modules/**/*'
 
-" = Personal Netrw Reference =
+nnoremap <silent> <C-b> :Lexplore<CR> " toggle netrw
+
+" = Netrw Reference =
 
 " Refresh directory listing: CTRL-L (netrw-ctrl-l)
 " Create directory: d (netrw-d)
+" Create file: %
 " Attempt delete file or directory D (netrw-D)
 " Go up one directory: - (netrw--)
 " Hide/show files: a
 
 
-" === Key mappings ===
+" === Airline ===
 
-" Fast saving of files
+let g:airline_theme='gruvbox'
+let g:airline#extensions#tabline#enabled=1
+" let g:airline_disable_statusline=1
+
+
+" === Coc-nvim ===
+
+" Use tab for trigger completion with characters ahead and navigate.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+inoremap <silent><expr> <NUL> coc#refresh()
+
+" Make <CR> auto-select the first completion item
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
+
+" Formatting selected code.
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder.
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Applying codeAction to the selected region.
+" Example: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying codeAction to the current buffer.
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Apply AutoFix to problem on the current line.
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Use CTRL-S for selections ranges.
+nmap <silent> <C-s> <Plug>(coc-range-select)
+xmap <silent> <C-s> <Plug>(coc-range-select)
+
+" Add `:Format` command to format current buffer.
+command! -nargs=0 Format :call CocAction('format')
+" Add `:Fold` command to fold current buffer.
+command! -nargs=? Fold :call CocAction('fold', <f-args>)
+" Add `:OR` command for organize imports of the current buffer.
+command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
+
+
+" === Javascript ===
+
+" Add `:Node` command to execute current buffer
+command! -nargs=0 Node :!node % 
+" Keymap to easily execute `:Node` command
+nnoremap <leader>n :Node<CR>
+
+
+" === Vim-Go ===
+
+set autowrite
+
+let g:go_code_completion_enabled = 0  " dedicate to lsp (coc-nvim)
+let g:go_def_mapping_enabled = 0      " use coc-nvim mapping
+" let g:go_echo_command_info = 0      " disable echo information for various commands 
+let g:go_echo_go_info = 0             " disble echo identifier information for code completions
+
+" Use [4] spaces for indentation
+autocmd FileType go setlocal tabstop=4 softtabstop=4 shiftwidth=4
+
+" build, run, test and info
+autocmd FileType go nmap <leader>b <Plug>(go-build)
+autocmd FileType go nmap <leader>r <Plug>(go-run)
+autocmd FileType go nmap <leader>t <Plug>(go-test)
+autocmd FileType go nmap <leader>c <Plug>(go-coverage-toggle)
+autocmd FileType go nmap <leader>i <Plug>(go-info)
+
+
+" == Ultisnips ===
+let g:UltiSnipsExpandTrigger = '<C-tab>'
+let g:UltiSnipsListSnippets = '<C-tab>'
+
+
+" === General Mapping ===
+
+" Remap [Esc] to jk
+inoremap jk <Esc>
+
+" Fast save and quit
 nnoremap <silent> <leader>w :w<CR><Esc>
+nnoremap <silent> <leader>q :q<CR>
 
-" Switch between buffers
+" Toggle between buffers
 nnoremap <silent> <C-x> :bnext<CR>
 nnoremap <silent> <C-z> :bprev<CR>
 
-" Toggle window splits
+" Switch window splits
 nnoremap <C-j> <C-W>j
 nnoremap <C-k> <C-W>k
 nnoremap <C-h> <C-W>h
 nnoremap <C-l> <C-W>l
 
-" Toggle Netrw files
-" and directory listing
-nnoremap <silent> <C-b> :Lexplore<CR>
-
-" My favourite magic
-" Moving lines up <shift-k> or down <shift-j>
-nnoremap <silent> <SA-j> :m+1<CR>==
-nnoremap <silent> <SA-k> :m-2<CR>==
-inoremap <silent> <SA-j> <Esc>:m+1<CR>==gi
-inoremap <silent> <SA-k> <Esc>:m-2<CR>==gi
-vnoremap <silent> <SA-j> :m '>+1<CR>gv=gv
-vnoremap <silent> <SA-k> :m '<-2<CR>gv=gv
-
-" === Plugins ===
-
-call plug#begin('~/.vim/plugged')
-
-" Gruvbox community edition
-" Premiere vim plugin
-Plug 'https://github.com/gruvbox-community/gruvbox'
-Plug 'https://tpope.io/vim/fugitive.git'
-" Surroundings, parenthesis, brackets, quotes etc
-Plug 'https://tpope.io/vim/surround.git'
-" Commenting
-Plug 'https://tpope.io/vim/commentary.git'
-
-call plug#end()
-
-" Gruvbox community edition
-colorscheme gruvbox
-
-
+" Moving lines up or down with autoindent
+nnoremap <silent> <C-j> :m+1<CR>==
+nnoremap <silent> <C-k> :m-2<CR>==
+vnoremap <silent> <S-j> :m '>+1<CR>gv=gv
+vnoremap <silent> <S-k> :m '<-2<CR>gv=gv
 
